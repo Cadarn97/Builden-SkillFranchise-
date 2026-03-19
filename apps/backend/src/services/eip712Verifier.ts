@@ -1,38 +1,39 @@
-import { ethers } from 'ethers';
+import { getAddress, verifyTypedData } from 'ethers';
 
-// EIP-712 Domain (Shared with Contract)
-const DOMAIN = {
-  name: "SkillFranchise",
-  version: "1",
-  chainId: 137, // Polygon/Base/etc
-  verifyingContract: "0x..." 
+import type {
+  Eip712Domain,
+  SkillAttestationMessage
+} from '@skillfranchise/shared/eip712/types';
+import { SkillAttestationTypes } from '@skillfranchise/shared/eip712/types';
+
+export type VerifySkillAttestationParams = {
+  expectedSigner: string;
+  domain: Eip712Domain;
+  message: SkillAttestationMessage;
+  signature: string;
 };
 
-// EIP-712 Types
-const TYPES = {
-  BadgeMint: [
-    { name: "user", type: "address" },
-    { name: "badgeId", type: "uint256" },
-    { name: "questId", type: "string" },
-    { name: "nonce", type: "uint256" }
-  ]
-};
+/**
+ * Verifies an EIP-712 signature for a SkillAttestation payload.
+ *
+ * Returns the recovered signer address (checksummed) if valid,
+ * otherwise throws.
+ */
+export function verifySkillAttestationSignature({
+  expectedSigner,
+  domain,
+  message,
+  signature
+}: VerifySkillAttestationParams): string {
+  const recovered = verifyTypedData(domain, SkillAttestationTypes, message, signature);
+  const recoveredChecksum = getAddress(recovered);
+  const expectedChecksum = getAddress(expectedSigner);
 
-const signerWallet = new ethers.Wallet(process.env.SIGNER_PRIVATE_KEY);
+  if (recoveredChecksum !== expectedChecksum) {
+    throw new Error(
+      `Invalid signature: expected ${expectedChecksum}, recovered ${recoveredChecksum}`
+    );
+  }
 
-export async function generateMintSignature(user: string, badgeId: number, questId: string) {
-  // Logic to verify quest completion without backtracking would happen here
-  // e.g., check database for session logs or violation flags.
-
-  const nonce = await fetchNextNonceFromRegistry(user);
-
-  const value = {
-    user: user,
-    badgeId: badgeId,
-    questId: questId,
-    nonce: nonce
-  };
-
-  const signature = await signerWallet._signTypedData(DOMAIN, TYPES, value);
-  return { signature, value };
+  return recoveredChecksum;
 }
