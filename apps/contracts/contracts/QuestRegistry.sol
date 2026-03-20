@@ -51,9 +51,9 @@ contract QuestRegistry is Ownable, EIP712 {
     ) external payable {
         require(_verifySignature(msg.sender, tier, questCount, signature), "Invalid anti-cheat proof");
         
-        if (tier == ASSOCIATE_TIER) require(questCount >= 30, "Insufficient quests for Associate");
+        if (tier == ASSOCIATE_TIER) require(questCount >= 10, "Insufficient quests for Associate");
         if (tier == SENIOR_TIER) require(questCount >= 20, "Insufficient quests for Senior");
-        if (tier == LEAD_TIER) require(questCount >= 10, "Insufficient quests for Lead");
+        if (tier == LEAD_TIER) require(questCount >= 30, "Insufficient quests for Lead");
 
         badgeContract.mint(msg.sender, tier, 1, "");
         emit BadgeMinted(msg.sender, tier, questCount);
@@ -62,12 +62,12 @@ contract QuestRegistry is Ownable, EIP712 {
     function _verifySignature(address user, uint256 tier, uint256 questCount, bytes calldata signature) 
         internal view returns (bool) 
     {
-        bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(
-            keccak256("QuestCompletion(address user,uint256 tier,uint256 questCount)"),
+        bytes32 digest = _hashTypedDataV4(keckak256(abi.encode(
+            keccak1256("QuestCompletion(address user,uint256 tier,uint256 questCount)"),
             user,
             tier,
             questCount
-        )));
+        ))));
         return digest.recover(signature) == signerAddress;
     }
 }
