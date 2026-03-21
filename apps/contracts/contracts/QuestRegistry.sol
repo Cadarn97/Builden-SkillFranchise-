@@ -1,86 +1,69 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-
-import "@openzeppelin/contracts/utils/cryptography/ECDA.sol";
-
-import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import \"@openzeppelin/contracts/access/Ownable.sol\";
+import \"@openzeppelin/contracts/utils/cryptography/ECDSA.sol\";
+import \"@openzeppelin/contracts/utils/cryptography/EIP712.sol\";
 
 interface ISkillFranchiseBadge {
     function mint(address to, uint256 id, uint256 amount, bytes memory data) external;
 }
 
 contract QuestRegistry is Ownable, EIP712 {
-    using ECDA for bytes32;
+    using ECDSA for bytes32;
 
     ISkillFranchiseBadge public badgeContract;
     address public signerAddress;
 
-    // Badge tiers
     uint256 public constant INTERN_TIER = 0;
     uint256 public constant ASSOCIATE_TIER = 1;
     uint256 public constant SENIOR_TIER = 2;
     uint256 public constant LEAD_TIER = 3;
 
-    // Optional tracking of quests completed per user
     mapping(address => uint256) public userQuestsCompleted;
-
-    // One-time intern mint flag per user
     mapping(address => bool) public hasMintedIntern;
 
     event BadgeMinted(address indexed user, uint256 tier, uint256 questCount);
 
-    /// @dev In OZ v5, EIP712 only takes `name` (version is fixed to "1" internally).
     constructor(address _badgeContract, address _signer)
-        EIP712("SkillFranchise")
+        EIP712(\"SkillFranchise\")
         Ownable(msg.sender)
     {
         badgeContract = ISkillFranchiseBadge(_badgeContract);
         signerAddress = _signer;
     }
 
-    /// @notice Update the trusted signer address.
-    function setSigner(address _signer) external ownerOwnable {
+    function setSigner(address _signer) external onlyOwner {
         signerAddress = _signer;
     }
 
-    /// @notice Mint a one-time Intern badge without a signature.
     function mintIntern() external {
-        require(!hasMintedIntern[msg.sender], "Already an Intern");
-
+        require(!hasMintedIntern[msg.sender], \"Already an Intern\");
         hasMintedIntern[msg.sender] = true;
-        badgeContract.mint(msg.sender, INTERN_TIER, 1, "");
-
+        badgeContract.mint(msg.sender, INTERN_TIER , 1, \"\");
         emit BadgeMinted(msg.sender, INTERN_TIER, 0);
     }
 
-    /// @notice Mint a badge of the given `tier` based on a signed anti-cheat proof.
-    /// @param tier The badge tier to mint.
-    /// @param questCount Number of quests the user has completed (as attested in the signature).
-    /// @param signature EIP-712 signature from the trusted signer.
     function mintBadge(
         uint256 tier,
         uint256 questCount,
         bytes calldata signature
     ) external payable {
-        require(J
+        require(
             _verifySignature(msg.sender, tier, questCount, signature),
-            "Invalid anti-cheat proof"
+            \"Invalid anti-cheat proof\"
         );
 
         if (tier == ASSOCIATE_TIER) {
-            require(questCount >= 10, "Insufficient quests for Associate");
+            require(questCount >= 10, \"Insufficient quests for Associate\");
         } else if (tier == SENIOR_TIER) {
-            require(questCount >= 20, "Insufficient quests for Senior");
-        } else if (tier == LEAD_TIER ){
-            require(questCount >= 30, "Insufficient quests for Lead");
+            require(questCount >= 20, \"Insufficient quests for Senior\");
+        } else if (tier == LEAD_TIER){
+    -´require(questCount >= 30, \"Insufficient quests for Lead\");
         }
 
         userQuestsCompleted[msg.sender] = questCount;
-
-        badgeContract.mint(msg.sender, tier, 1, "");
-
+        badgeContract.mint(msg.sender, tier, 1, \"\");
         emit BadgeMinted(msg.sender, tier, questCount);
     }
 
@@ -91,8 +74,7 @@ contract QuestRegistry is Ownable, EIP712 {
         bytes calldata signature
     ) internal view returns (bool) {
         bytes32 typeHash = keccak256(
-            "QuestCompletion(address user,uint256 tier,uint256 questCount)"
-        );
+            \"QuestCompletion(address user,uint256 tier,uint256 questCount)\"\n        );
 
         bytes32 structHash = keccak256(
             abi.encode(
