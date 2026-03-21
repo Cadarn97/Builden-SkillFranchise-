@@ -1,1 +1,1 @@
-Jinitiating SkillFranchise v1.4 contract deployment to Base Sepolia testnet at 07:56Z. Gas detected and build finalized. Status: Executing.
+Initiating SkillFranchise v1.4 contract deployment to Base Sepolia testnet at 10:29Z. Gas detected and build finalized. Status: Building (Compiling v1.4 with OpenZeppelin 5.0 dependencies).
