@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import \"@openzeppelin/contracts/access/Ownable.sol\";
-import \"@openzeppelin/contracts/utils/cryptography/ECDSA.sol\";
-import \"@openzeppelin/contracts/utils/cryptography/EIP712.sol\";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 interface ISkillFranchiseBadge {
     function mint(address to, uint256 id, uint256 amount, bytes memory data) external;
@@ -26,7 +26,7 @@ contract QuestRegistry is Ownable, EIP712 {
     event BadgeMinted(address indexed user, uint256 tier, uint256 questCount);
 
     constructor(address _badgeContract, address _signer)
-        EIP712(\"SkillFranchise\")
+        EIP712("SkillFranchise", "1")
         Ownable(msg.sender)
     {
         badgeContract = ISkillFranchiseBadge(_badgeContract);
@@ -38,9 +38,9 @@ contract QuestRegistry is Ownable, EIP712 {
     }
 
     function mintIntern() external {
-        require(!hasMintedIntern[msg.sender], \"Already an Intern\");
-        hasMintedIntern[msg.sender] = true;
-        badgeContract.mint(msg.sender, INTERN_TIER , 1, \"\");
+        require(!hasMintedIntern[msg.sender'], "Already an Intern");
+        hasMintedIntern[msg.sender'] = true;
+        badgeContract.mint(msg.sender, INTERN_TIER , 1, "");
         emit BadgeMinted(msg.sender, INTERN_TIER, 0);
     }
 
@@ -51,19 +51,19 @@ contract QuestRegistry is Ownable, EIP712 {
     ) external payable {
         require(
             _verifySignature(msg.sender, tier, questCount, signature),
-            \"Invalid anti-cheat proof\"
+            "Invalid anti-cheat proof"
         );
 
         if (tier == ASSOCIATE_TIER) {
-            require(questCount >= 10, \"Insufficient quests for Associate\");
+            require(questCount >= 10, "Insufficient quests for Associate");
         } else if (tier == SENIOR_TIER) {
-            require(questCount >= 20, \"Insufficient quests for Senior\");
+            require(questCount >= 20, "Insufficient quests for Senior");
         } else if (tier == LEAD_TIER){
-    -´require(questCount >= 30, \"Insufficient quests for Lead\");
+            require(questCount >= 30, "Insufficient quests for Lead");
         }
 
-        userQuestsCompleted[msg.sender] = questCount;
-        badgeContract.mint(msg.sender, tier, 1, \"\");
+        userQuestsCompleted[msg.sender'] = questCount;
+        badgeContract.mint(msg.sender, tier, 1, "");
         emit BadgeMinted(msg.sender, tier, questCount);
     }
 
@@ -74,7 +74,8 @@ contract QuestRegistry is Ownable, EIP712 {
         bytes calldata signature
     ) internal view returns (bool) {
         bytes32 typeHash = keccak256(
-            \"QuestCompletion(address user,uint256 tier,uint256 questCount)\"\n        );
+            "QuestCompletion(address user,uint256 tier,uint256 questCount)"
+        );
 
         bytes32 structHash = keccak256(
             abi.encode(
