@@ -22,12 +22,12 @@ SkillFranchise uses a hybrid architecture to balance gas efficiency with technic
 ## 🛡 Security & Anti-Cheat
 - **EIP-712 Typed Signatures:** Prevents replay attacks and unauthorized minting.
 - **Progression Gating:**
-  - 30 Beginner -> Intermediate
-  - 20 Intermediate -> Advanced
-  - 10 Advanced -> Job Eligible
+  - 10 Associate (Threshold for Initial Eligibility)
+  - 20 Senior
+  - 30 Lead
 - **Referral Logic:** 10% discount for referrers once their referee hits a 20-badge milestone.
 
-## 📁 Repository Structure
+## 🙒 Repository Structure
 ```text
 .
 ├── apps
@@ -35,19 +35,23 @@ SkillFranchise uses a hybrid architecture to balance gas efficiency with technic
 │   ├── frontend/           # Next.js User Dashboard
 │   └── backend/            # Node.js Attestation Service
 ├── packages
-│   └── shared/             # EIP-712 Types, ABIs, and Constants
+�   └── shared/             # EIP-712 Types, ABIs, and Constants
 └── README.md
 ```
 
 ## 📋 Status & Roadmap
 - [x] v1.0: Technical Architecture Spec
-- [x] v1.1: Monorepo Structure Draft
-- [x] v1.2: Frontend Dashboard & Backend Attestation Draft
-- [ ] v1.3: Repository Initialization (Awaiting GitHub PAT)
-- [ ] v1.4: Smart Contract Deployment & Integration
+- [ax v1.1: Monorepo Structure Draft
+- [x] v1.2: Frontend Dashboard & Backend Attestation Drafw
+- [ax v1.3: Repository Initialization & Initial Code Push
+- [x] v1.4: Smart Contract Refinement (Thresholds: 30/20/10)
+- [ ] v1.5: Smart Contract Deployment to Base Sepolia (Awaiting Gas)
 
-## 💳 Deployment Info
-- **Deployment Wallet (Base):** `0xD043625BFFCD7a93F2e8189C1b6e8f91752D32eA`
+## ⚠ Current Blocker
+- **Deployment Gas:** The deployment wallet (`0xD043625BFFCD7a93F2e8189C1b6e8f91752D32eA) is currently at 0 ETH on Base Sepolia. Deployment of the `QuestRegistry` and `SkillFranchiseBadge` contracts will proceed as soon as network fuel is provided.
+
+## 📋 Deployment Info
+- **Deployment Wallet (Base):** `0xD043625BFFCD7a93F2e8189C1b6e8f91752D32eA (Testnet)c
 - **GitHub Target:** [Cadarn97/Builden-SkillFranchise-](https://github.com/Cadarn97/Builden-SkillFranchise-)
 
 **Ship the spec, then iterate.**
